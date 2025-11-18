@@ -39,7 +39,9 @@
 
         body {
             margin: 0;
-            background: linear-gradient(135deg, #0b0e13 0%, #1a1f2e 50%, #0f131a 100%);
+            background: radial-gradient(1200px 600px at 70% -10%, rgba(110, 231, 255, 0.08), transparent 60%),
+                radial-gradient(900px 500px at -10% 20%, rgba(167, 139, 250, 0.08), transparent 50%),
+                var(--bg);
             color: var(--text);
             font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
             line-height: 1.6;
@@ -192,9 +194,6 @@
             text-align: center;
             max-width: 800px;
             margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
 
         .eyebrow {
@@ -202,22 +201,17 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 10px 20px;
+            padding: 8px 12px;
             border-radius: 999px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.5px;
             color: #081016;
             background: linear-gradient(135deg, var(--brand), var(--brand-2));
-            box-shadow: 0 0 20px rgba(110, 231, 255, 0.5);
-            margin: 0 auto;
-            width: fit-content;
-            position: relative;
-            text-transform: uppercase;
+            box-shadow: var(--glow);
         }
 
         h1 {
-            margin: 0;
+            margin: 16px 0 12px;
             font-size: clamp(28px, 5vw, 56px);
             line-height: 1.05;
             letter-spacing: -0.02em;
@@ -231,7 +225,7 @@
         }
 
         .roles {
-            margin: 0;
+            margin: 6px 0 10px;
             min-height: 28px;
             font-weight: 800;
             letter-spacing: -0.01em;
@@ -253,27 +247,37 @@
             background: currentColor;
             opacity: 0.8;
             transform: translateY(2px);
-            animation: none;
+        }
+
+        @keyframes blink {
+
+            0%,
+            49% {
+                opacity: 0.8;
+            }
+
+            50%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .roles .caret {
+            animation: blink 1s steps(2, jump-none) infinite;
         }
 
         .subtitle {
             color: var(--muted);
             font-size: clamp(14px, 2vw, 16px);
             max-width: 60ch;
-            margin: 0 auto;
         }
 
         .cta {
-            margin: 0;
+            margin-top: 28px;
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
             justify-content: center;
-            width: 100%;
-        }
-
-        .cta .btn {
-            display: inline-flex;
         }
 
         .btn {
@@ -344,12 +348,6 @@
             border: 2px solid rgba(110, 231, 255, 0.4);
             border-radius: 50%;
             animation: rotate 20s linear infinite;
-        }
-        
-        @media (max-width: 768px) {
-            .circle-animation {
-                animation: none;
-            }
         }
         
         .circle-1 {
@@ -577,11 +575,6 @@
                 min-height: 300px;
             }
             
-            .hero-copy {
-                gap: 16px;
-                padding-top: 70px;
-            }
-
             .photo-section { 
                 width: 130px; 
                 height: 130px; 
@@ -614,15 +607,16 @@
 
             .cta {
                 flex-direction: column;
-                align-items: center;
-                gap: 12px;
+                align-items: stretch;
+               
             }
 
             .cta .btn {
                 width: 100%;
-                min-width: unset;
                 justify-content: center;
+               
             }
+            
 
             h1 {
                 font-size: clamp(22px, 4vw, 36px);
@@ -651,11 +645,6 @@
                 min-height: 260px;
             }
             
-            .hero-copy {
-                gap: 30px;
-                padding-top: 50px;
-            }
-
             .photo-section { 
                 width: 110px; 
                 height: 110px; 
@@ -701,18 +690,6 @@
 
             .container {
                 padding: 0 12px;
-            }
-
-            .cta {
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-            }
-
-            .cta .btn {
-                width: 100%;
-                min-width: unset;
-                justify-content: center;
             }
 
             .about .grid {
@@ -1093,7 +1070,7 @@
         scene.add(panelLeft, panelRight, panelTop);
 
         // Particles
-        const PARTICLE_COUNT = window.matchMedia('(max-width: 480px)').matches ? 200 : 1200;
+        const PARTICLE_COUNT = window.matchMedia('(max-width: 480px)').matches ? 400 : 1200;
         const particles = new THREE.Points(
             new THREE.BufferGeometry(),
             new THREE.PointsMaterial({ color: 0xaadfff, size: 0.01, transparent: true, opacity: 0.5 })
@@ -1209,27 +1186,24 @@
 
         // GSAP animations
         gsap.registerPlugin(ScrollTrigger);
-        
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        const animDuration = isMobile ? 0.3 : 0.8;
-        const animDelay = isMobile ? 0.05 : 0.1;
-        
-        gsap.from('.brand, nav a', { y: -16, opacity: 0, duration: animDuration, stagger: animDelay, ease: 'power3.out' });
-        gsap.from('.eyebrow', { y: 16, opacity: 0, duration: animDuration - 0.1, delay: animDelay, ease: 'power3.out' });
-        gsap.from('h1', { y: 18, opacity: 0, duration: animDuration, delay: animDelay * 2, ease: 'power3.out' });
-        gsap.from('.roles', { y: 12, opacity: 0, duration: animDuration - 0.1, delay: animDelay * 2.2, ease: 'power3.out' });
-        gsap.from('.subtitle', { y: 18, opacity: 0, duration: animDuration, delay: animDelay * 3, ease: 'power3.out' });
-        gsap.from('.cta .btn', { y: 12, opacity: 0, duration: animDuration - 0.2, delay: animDelay * 3.2, ease: 'power3.out', stagger: animDelay });
+        gsap.from('.brand, nav a', { y: -16, opacity: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out' });
+        gsap.from('.eyebrow', { y: 16, opacity: 0, duration: 0.7, delay: 0.1, ease: 'power3.out' });
+        gsap.from('h1', { y: 18, opacity: 0, duration: 0.9, delay: 0.18, ease: 'power3.out' });
+        gsap.from('.roles', { y: 12, opacity: 0, duration: 0.8, delay: 0.22, ease: 'power3.out' });
+        gsap.from('.subtitle', { y: 18, opacity: 0, duration: 0.9, delay: 0.3, ease: 'power3.out' });
+        gsap.from('.cta .btn', { y: 12, opacity: 0, duration: 0.7, delay: 0.32, ease: 'power3.out', stagger: 0.05 });
 
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        
         gsap.utils.toArray('.card').forEach((el) => {
             gsap.from(el, {
-                y: 18, opacity: 0, duration: isMobile ? 0.3 : 0.6, ease: 'power2.out',
+                y: 18, opacity: 0, duration: isMobile ? 0.4 : 0.6, ease: 'power2.out',
                 scrollTrigger: { trigger: el, start: 'top 85%', once: true }
             });
         });
 
         gsap.from('#about .about', {
-            y: 24, opacity: 0, duration: isMobile ? 0.3 : 0.8, ease: 'power2.out',
+            y: 24, opacity: 0, duration: isMobile ? 0.5 : 0.8, ease: 'power2.out',
             scrollTrigger: { trigger: '#about .about', start: 'top 85%', once: true }
         });
 
@@ -1239,11 +1213,20 @@
             gsap.globalTimeline.timeScale(0.8);
         }
 
-        // Roles text cycling - disabled for performance
+        // Roles text cycling
         const roles = ['Frontend Developer', 'Backend Developer', 'Full Stack Developer'];
         const roleEl = document.getElementById('roleText');
-        // Just show the first role without animation
-        roleEl.textContent = roles[0];
+        let idx = 0;
+        function cycleRole() {
+            const next = (idx + 1) % roles.length;
+            const tl = gsap.timeline();
+            tl.to(roleEl, { y: -8, opacity: 0, duration: 0.35, ease: 'power2.in' })
+                .add(() => { idx = next; roleEl.textContent = roles[idx]; })
+                .fromTo(roleEl, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' })
+                .to({}, { duration: 1.8 })
+                .add(cycleRole);
+        }
+        cycleRole();
     </script>
 </body>
 
