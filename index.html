@@ -191,11 +191,18 @@
         .hero-copy {
             z-index: 2;
             padding-top: 96px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .eyebrow {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             padding: 8px 12px;
             border-radius: 999px;
@@ -207,14 +214,21 @@
         }
 
         h1 {
-            margin: 16px 0 12px;
+            margin: 0;
             font-size: clamp(28px, 5vw, 56px);
             line-height: 1.05;
             letter-spacing: -0.02em;
+            text-align: center;
+            background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(110, 231, 255, 0.2);
+            font-weight: 800;
         }
 
         .roles {
-            margin: 6px 0 10px;
+            margin: 0;
             min-height: 28px;
             font-weight: 800;
             letter-spacing: -0.01em;
@@ -259,13 +273,21 @@
             color: var(--muted);
             font-size: clamp(14px, 2vw, 16px);
             max-width: 60ch;
+            margin: 0 auto;
         }
 
         .cta {
-            margin-top: 28px;
+            margin: 0;
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .cta .btn {
+            flex: 1;
+            min-width: 200px;
         }
 
         .btn {
@@ -401,6 +423,7 @@
             border-radius: 16px;
             padding: 18px;
             transition: transform .2s ease, border-color .2s ease, background .2s ease;
+            contain: layout style;
         }
 
         .card:hover {
@@ -531,6 +554,12 @@
             .section-title {
                 font-size: clamp(18px, 2.2vw, 24px);
             }
+            
+            .about .grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px;
+            }
+            
             .photo-section { width: 150px; height: 150px; margin-top: 60px; }
             .photo-container { width: 120px; height: 120px; }
             .circle-1 { width: 140px; height: 140px; }
@@ -556,6 +585,11 @@
                 min-height: 300px;
             }
             
+            .hero-copy {
+                gap: 16px;
+                padding-top: 70px;
+            }
+
             .photo-section { 
                 width: 130px; 
                 height: 130px; 
@@ -588,16 +622,15 @@
 
             .cta {
                 flex-direction: column;
-                align-items: stretch;
-               
+                align-items: center;
+                gap: 12px;
             }
 
             .cta .btn {
                 width: 100%;
+                min-width: unset;
                 justify-content: center;
-               
             }
-            
 
             h1 {
                 font-size: clamp(22px, 4vw, 36px);
@@ -626,6 +659,11 @@
                 min-height: 260px;
             }
             
+            .hero-copy {
+                gap: 30px;
+                padding-top: 50px;
+            }
+
             .photo-section { 
                 width: 110px; 
                 height: 110px; 
@@ -673,13 +711,26 @@
                 padding: 0 12px;
             }
 
+            .cta {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .cta .btn {
+                width: 100%;
+                min-width: unset;
+                justify-content: center;
+            }
+
             .about .grid {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(2, 1fr) !important;
                 gap: 8px;
             }
 
             .about .card {
                 padding: 10px;
+                will-change: auto;
             }
 
             .about .card h3 {
@@ -689,6 +740,18 @@
 
             .about .card p {
                 font-size: 11px;
+            }
+
+            #about {
+                will-change: auto;
+            }
+
+            #projects {
+                will-change: auto;
+            }
+
+            #certifications {
+                will-change: auto;
             }
         }
 
@@ -1038,7 +1101,7 @@
         scene.add(panelLeft, panelRight, panelTop);
 
         // Particles
-        const PARTICLE_COUNT = window.matchMedia('(max-width: 480px)').matches ? 800 : 1200;
+        const PARTICLE_COUNT = window.matchMedia('(max-width: 480px)').matches ? 400 : 1200;
         const particles = new THREE.Points(
             new THREE.BufferGeometry(),
             new THREE.PointsMaterial({ color: 0xaadfff, size: 0.01, transparent: true, opacity: 0.5 })
@@ -1086,14 +1149,29 @@
 
         // Animate
         let t = 0;
+        let isMobileDevice = window.matchMedia('(max-width: 480px)').matches;
+        let frameSkip = isMobileDevice ? 2 : 1;
+        let frameCount = 0;
+
         function animate() {
             requestAnimationFrame(animate);
-            t += 0.01;
+            frameCount++;
+            
+            // Skip frames on mobile for performance
+            if (frameCount % frameSkip !== 0) return;
+            
+            t += 0.01 * frameSkip;
 
-            // Laptop gentle motion
-            laptop.rotation.y = Math.sin(t * 0.6) * 0.25;
-            laptop.position.y = Math.sin(t * 0.9) * 0.03;
-            lid.rotation.x = -Math.PI / 9 + Math.sin(t * 0.7) * 0.03;
+            // Laptop gentle motion (reduced on mobile)
+            if (!isMobileDevice) {
+                laptop.rotation.y = Math.sin(t * 0.6) * 0.25;
+                laptop.position.y = Math.sin(t * 0.9) * 0.03;
+                lid.rotation.x = -Math.PI / 9 + Math.sin(t * 0.7) * 0.03;
+            } else {
+                laptop.rotation.y = Math.sin(t * 0.3) * 0.15;
+                laptop.position.y = Math.sin(t * 0.6) * 0.01;
+                lid.rotation.x = -Math.PI / 9 + Math.sin(t * 0.4) * 0.01;
+            }
 
             // Update screen code scrolling
             const ctx = screenData.canvas.getContext('2d');
@@ -1109,22 +1187,28 @@
             }
             screenData.texture.needsUpdate = true;
 
-            // Floating panels motion
-            panelLeft.position.y = 0.2 + Math.sin(t * 0.9) * 0.06;
-            panelLeft.rotation.y = Math.sin(t * 0.7) * 0.2;
-            panelRight.position.y = 0.05 + Math.cos(t * 0.95) * 0.06;
-            panelRight.rotation.y = -Math.sin(t * 0.6) * 0.18;
-            panelTop.position.y = 0.9 + Math.sin(t * 1.1) * 0.07;
-            panelTop.rotation.y = Math.sin(t * 0.5) * 0.15;
+            // Floating panels motion (simplified on mobile)
+            if (!isMobileDevice) {
+                panelLeft.position.y = 0.2 + Math.sin(t * 0.9) * 0.06;
+                panelLeft.rotation.y = Math.sin(t * 0.7) * 0.2;
+                panelRight.position.y = 0.05 + Math.cos(t * 0.95) * 0.06;
+                panelRight.rotation.y = -Math.sin(t * 0.6) * 0.18;
+                panelTop.position.y = 0.9 + Math.sin(t * 1.1) * 0.07;
+                panelTop.rotation.y = Math.sin(t * 0.5) * 0.15;
+            } else {
+                panelLeft.position.y = 0.2 + Math.sin(t * 0.5) * 0.03;
+                panelRight.position.y = 0.05 + Math.cos(t * 0.5) * 0.03;
+                panelTop.position.y = 0.9 + Math.sin(t * 0.5) * 0.03;
+            }
 
             // Camera parallax
             camera.position.x += (targetX * 0.4 - camera.position.x) * 0.04;
             camera.position.y += (targetY * 0.2 - camera.position.y) * 0.04;
             camera.lookAt(0, 0, 0);
 
-            // Background particles
-            particles.rotation.y += 0.0008;
-            particles.rotation.x += 0.0003;
+            // Background particles (slower on mobile)
+            particles.rotation.y += isMobileDevice ? 0.0004 : 0.0008;
+            particles.rotation.x += isMobileDevice ? 0.00015 : 0.0003;
 
             resizeRenderer();
             renderer.render(scene, camera);
@@ -1140,16 +1224,18 @@
         gsap.from('.subtitle', { y: 18, opacity: 0, duration: 0.9, delay: 0.3, ease: 'power3.out' });
         gsap.from('.cta .btn', { y: 12, opacity: 0, duration: 0.7, delay: 0.32, ease: 'power3.out', stagger: 0.05 });
 
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+        
         gsap.utils.toArray('.card').forEach((el) => {
             gsap.from(el, {
-                y: 18, opacity: 0, duration: 0.6, ease: 'power2.out',
-                scrollTrigger: { trigger: el, start: 'top 85%' }
+                y: 18, opacity: 0, duration: isMobile ? 0.4 : 0.6, ease: 'power2.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', once: true }
             });
         });
 
         gsap.from('#about .about', {
-            y: 24, opacity: 0, duration: 0.8, ease: 'power2.out',
-            scrollTrigger: { trigger: '#about .about', start: 'top 85%' }
+            y: 24, opacity: 0, duration: isMobile ? 0.5 : 0.8, ease: 'power2.out',
+            scrollTrigger: { trigger: '#about .about', start: 'top 85%', once: true }
         });
 
         // Accessibility: reduce motion
@@ -1174,6 +1260,5 @@
         cycleRole();
     </script>
 </body>
-
 
 </html>
